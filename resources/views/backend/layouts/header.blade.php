@@ -27,9 +27,26 @@
     <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/datatables-select-bs5/select.bootstrap5.css') }}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/quill/typography.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/quill/katex.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/quill/editor.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/dropzone/dropzone.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/flatpickr/flatpickr.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/tagify/tagify.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/toastr/toastr.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/animate-css/animate.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/@form-validation/form-validation.css')}}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/libs/sweetalert2/sweetalert2.css')}}" />
+
 
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('backend/assets/vendor/css/pages/cards-advance.css') }}" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/vendor/css/pages/page-profile.css')}}" />
+
 
     <!-- Helpers -->
     <script src="{{ asset('backend/assets/vendor/js/helpers.js') }}"></script>
@@ -38,3 +55,6 @@
     <script src="{{ asset('backend/assets/vendor/js/template-customizer.js') }}"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('backend/assets/js/config.js') }}"></script>
+    {{-- Jquery --}}
+    <script src="{{ asset('backend/assets/vendor/libs/jquery/jquery.js') }}"></script>
+

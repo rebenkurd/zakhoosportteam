@@ -11,7 +11,7 @@
     bounds: '#snow-editor',
     modules: {
       formula: true,
-      toolbar: '#snow-toolbar'
+      toolbar: '#snow-toolbar',
     },
     theme: 'snow'
   });

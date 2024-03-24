@@ -11,6 +11,8 @@
 |
 */
 
+
+
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
@@ -41,6 +43,7 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application
@@ -51,5 +54,6 @@ $app->singleton(
 | from the actual running of the application and sending responses.
 |
 */
+
 
 return $app;
