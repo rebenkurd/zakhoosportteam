@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('image')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->enum('status',['active','inactive'])->default('active');
             $table->string('role')->default('subscriber');
+            $table->string('google_id')->nullable();
+            $table->string('facebook_id')->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

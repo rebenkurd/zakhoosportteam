@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('votes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->references('id')->on('users')->cascadeOnDelete();
-            $table->foreignId('voteable_id')->nullable()->references('id')->on('players')->cascadeOnDelete();
-            $table->foreignId('voteable_type');
-            $table->tinyInteger('vote');
-            $table->enum('status',['active', 'inactive'])->default('inactive');
+            $table->foreignId('poll_id')->constrained();
+            $table->foreignId('option_id')->constrained('poll_options');
+            $table->foreignId('user_id')->constrained();
+            $table->ipAddress('ip_address')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

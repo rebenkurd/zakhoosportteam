@@ -10,6 +10,15 @@ id="layout-navbar">
 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
   <ul class="navbar-nav flex-row align-items-center ms-auto">
+
+    <!-- Home -->
+    <li class="nav-item me-2 me-xl-0">
+    <a class="nav-link" href="{{ route('home.page') }}" target="_blank" >
+        <i class="ti ti-home"></i>
+    </a>
+    </li>
+    <!-- / Home-->
+
     <!-- Language -->
     <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
       <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -59,6 +68,8 @@ id="layout-navbar">
       </ul>
     </li>
     <!-- / Style Switcher-->
+
+
 
 
     <!-- Notification -->

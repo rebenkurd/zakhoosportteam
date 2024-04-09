@@ -30,7 +30,7 @@
                 @endforeach
                 @endif
 
-            <form action="{{ route('update.reklam') }}" method="post" enctype="multipart/form-data" id="form_validation">
+            <form action="{{ route('update.reklam', $reklam->id) }}" method="post" enctype="multipart/form-data" id="form_validation">
                 @csrf
               <div class="row mb-3 ">
                 <div class="col">
@@ -41,7 +41,7 @@
                       id="title"
                       placeholder="Enter a Reklam Title"
                       name="title"
-                      {{ $reklam->title }}
+                      value="{{ $reklam->title }}"
                       aria-label="Reklam Title" />
                 </div>
                 <div class="col">
@@ -76,7 +76,7 @@
                       class="form-check-input"
                       type="radio"
                       value="active"
-                      {{ $reklam->status == 'inactive' ? 'checked' : '' }}
+                      {{ $reklam->status == 'active' ? 'checked' : '' }}
                       id="active" />
                     <label class="form-check-label" for="active"
                       >Active</label

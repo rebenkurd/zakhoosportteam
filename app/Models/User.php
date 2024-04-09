@@ -23,6 +23,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'google_id',
+        'facebook_id',
         'username',
         'image',
         'status',
@@ -49,8 +51,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function votes()
+    public function polls()
     {
-        return $this->hasMany(Vote::class);
+        return $this->hasMany(Poll::class, 'created_by');
     }
+
 }

@@ -31,7 +31,10 @@
  <script src="{{ asset('backend/assets/vendor/libs/jquery-sticky/jquery-sticky.js')}}"></script>
  <script src="{{ asset('backend/assets/vendor/libs/toastr/toastr.js') }}"></script>
  <script src="{{ asset('backend/assets/vendor/libs/sweetalert2/sweetalert2.js')}}"></script>
-
+ <script src="{{ asset('backend/assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js')}}"></script>
+ <script src="{{ asset('backend/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js')}}"></script>
+ <script src="{{ asset('backend/assets/vendor/libs/jquery-timepicker/jquery-timepicker.js')}}"></script>
+ <script src="{{ asset('backend/assets/vendor/libs/pickr/pickr.js')}}"></script>
  <!-- Main JS -->
  <script src="{{ asset('backend/assets/js/main.js') }}"></script>
  <script src="{{ asset('backend/assets/js/forms-editors.js')}}"></script>
@@ -98,4 +101,31 @@
         })();
     </script>
 
+
+    <script>
+
+        var select2 = $('.form-select');
+        if (select2.length) {
+            select2.each(function () {
+            var $this = $(this);
+            $this.wrap('<div class="position-relative"></div>').select2({
+                placeholder: 'Select value',
+                dropdownParent: $this.parent()
+            });
+            });
+        }
+
+    </script>
+
+<script>
+    $('.datepickr').flatpickr({
+      enableTime: false,
+      dateFormat: 'Y-m-d'
+    });
+    $('.timepickr').flatpickr({
+      noCalendar: true,
+      enableTime: true,
+      timeFormat: 'H:i'
+    });
+</script>
 

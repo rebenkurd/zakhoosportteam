@@ -95,71 +95,20 @@
     <div class="card">
             <!-- DataTable with Buttons -->
             <div class="card">
-                <div class="card-datatable pt-0">
-                    <div class="card-header pb-0 ">
-                        <h4 class="card-title
-                        ">List of Recycle Users</h4>
-                    </div>
-                    <a href="#" class="btn btn-secondary add-new btn-primary waves-effect waves-light m-2"><span><i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New User</span></span></a>
-
-                  <table class="table" id="zakho_table">
-                    <thead>
-                      <tr>
-                        <th><input class="form-check-input select-all" type="checkbox" id="selectAll" data-value="all"></th>
-                        <th>No.</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($users as $index => $user)
+                <div class="card-datatable table-responsive pt-0">
+                    <table class="datatables-basic table" id="table">
+                        <thead>
                             <tr>
-                                <td><input class="form-check-input" type="checkbox" id="select"></td>
-                                <td>{{ $index+1 }}</td>
-                                <td>
-                                    <input type="hidden" value="{{ $user->id }}">
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-3"><img src="{{ !empty($user->image)? asset($user->image) : 'https://via.placeholder.com/150x150' }}" alt="Avatar"
-                                                    class="rounded-circle"></div>
-                                        </div>
-                                        <div class="d-flex flex-column"><a href="{{ route('detail.user',$user->id) }}"
-                                                class="text-body text-truncate"><span
-                                                    class="fw-medium">{{ Illuminate\Support\Str::of($user->name)->apa() }}</span></a><small
-                                                class="text-muted">{{ $user->email }}</small></div>
-                                    </div>
-                                </td>                                <td>{{ $user->email }}</td>
-                                <td>
-                                    {{ !empty($user->getRoleNames()->first())? $user->getRoleNames()->first() : 'Subscriber'}}
-                                </td>
-                                <td>
-                                    @if ($user->status == 'active')
-                                   <span class="badge bg-label-success">Active</span>
-                                @else
-                                    <span class="badge bg-label-danger">Inactive</span>
-                                @endif
-                                </td>
-                                <td>
-                                        <button
-                                          type="button"
-                                          class="btn text-primary btn-icon rounded-2 dropdown-toggle hide-arrow"
-                                          data-bs-toggle="dropdown"
-                                          aria-expanded="false">
-                                          <i class="ti ti-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a href="{{ route('detail.user',$user->id) }}" class="dropdown-item"><i class="ti ti-user"></i> Detail</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item " id="restore-btn" data-id="{{ $user->id }}"><i class="ti ti-restore"></i> Restore</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item " id="delete-btn" data-id="{{ $user->id }}"><i class="ti ti-trash"></i> Delete</a></li>
-                                        </ul>
-                                </td>
+                                <th></th>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Role</th>
+                                <th>Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
               </div>
     </div>
@@ -167,14 +116,13 @@
 
 
 
-
-  {{-- force delete user --}}
+{{-- force delete  --}}
 <script>
     $(document).ready(function(){
-        if($('#delete-btn').length){
-            $(document).on('click', '#delete-btn', function (e) {
+            $(document).on('click', '.delete-btn', function (e) {
                 e.preventDefault();
-                var deleteBtn = $(this); // Store reference to $(this)
+                console.log('delete');
+                var deleteBtn = $(this);
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -197,8 +145,8 @@
                             }
                         });
 
-                        var UserId = deleteBtn.data('id');
-                        var url = "{{ route('delete.user', ':id') }}".replace(':id', UserId);
+                        var id = deleteBtn.data('id');
+                        var url = "{{ route('delete.user', ':id') }}".replace(':id', id);
 
                         $.ajax({
                             url: url,
@@ -208,6 +156,8 @@
                             },
                             success: function(response) {
                                 deleteBtn.closest('tr').remove();
+                                $('#table').DataTable().ajax.reload();
+
                             },
                             error: function(xhr, error) {
                                 toastr.error(error);
@@ -216,16 +166,13 @@
                     }
                 });
             });
-        }
     });
 </script>
 
-
-{{-- restore User --}}
+{{-- restore --}}
 <script>
     $(document).ready(function(){
-        if($('#restore-btn').length){
-            $(document).on('click', '#restore-btn', function (e) {
+            $(document).on('click', '.restore-btn', function (e) {
                 e.preventDefault();
                 var restoreBtn = $(this);
                 Swal.fire({
@@ -233,7 +180,7 @@
                     text: "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, ban it!',
+                    confirmButtonText: 'Yes, restore it!',
                     customClass: {
                         confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
                         cancelButton: 'btn btn-label-secondary waves-effect waves-light'
@@ -243,15 +190,15 @@
                     if (result.value) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'baned!',
-                            text: 'Your file has been baned.',
+                            title: 'restoreed!',
+                            text: 'Your file has been restoreed.',
                             customClass: {
                                 confirmButton: 'btn btn-success waves-effect waves-light'
                             }
                         });
 
-                        var userId = restoreBtn.data('id');
-                        var url = "{{ route('restore.user', ':id') }}".replace(':id', userId);
+                        var id = restoreBtn.data('id');
+                        var url = "{{ route('restore.user', ':id') }}".replace(':id', id);
 
                         $.ajax({
                             url: url,
@@ -261,6 +208,7 @@
                             },
                             success: function(response) {
                                 restoreBtn.closest('tr').remove();
+                                $('#table').DataTable().ajax.reload();
                             },
                             error: function(xhr, error) {
                                 toastr.error(error);
@@ -269,10 +217,490 @@
                     }
                 });
             });
-        }
     });
 </script>
 
+{{-- crete new  --}}
+<script>
+    $(document).ready(function(){
+            $(document).on('click', '.create-new', function (e) {
+                e.preventDefault();
+                var url = "{{ route('add.user') }}";
+                $.ajax({
+                    url: url,
+                    type: 'get',
+                    success: function(response) {
+                        window.location.href = url;
+                    },
+                    error: function(xhr, error) {
+                        toastr.error(error);
+                    }
+                });
+            });
+    });
+</script>
+
+{{-- Table Data --}}
+<script>
+    $(function(){
+
+        var addButton = "Add New User";
+        var tableTitle = "List Of Recycle Users";
+        var columnNumber = [1,2,3,4];
+        var url = "{{ route('recycle.user') }}";
+        let table =$('#table');
+
+        table.dataTable({
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            ajax:url,
+            columnDefs: [
+                {
+                    // For Checkboxes
+                    targets: 0,
+                    orderable: false,
+                    searchable: false,
+                    responsivePriority: 3,
+                    checkboxes: true,
+                    render: function (id) {
+                        return '<input type="checkbox" value="'+id+'" class="dt-checkboxes form-check-input select-item">';
+                    },
+                    checkboxes: {
+                        selectAllRender:
+                            '<input type="checkbox" class="form-check-input select-all-items">',
+                    },
+                }
+            ],
+            columns: [
+                {
+                    data: 'id',
+                    name: 'id',
+                    orderable: false,
+                    searchable: false,
+                    visible: true
+                },
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false,
+                    width: '3%'
+                },
+                {
+                    data: 'image',
+                    name: 'name'
+                },
+                {
+                    data: 'statusBtn',
+                    name: 'status',
+                    width: '15%'
+
+                },
+                {
+                    data: 'roleBtn',
+                    name: 'role',
+                    width: '15%'
+
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    width: '15%'
+                },
+
+            ],
+            dom: '<"card-header flex-column flex-md-row"<"head-label fs-3 text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+            buttons: [
+                    {
+                        extend: "collection",
+                        className:
+                            "btn btn-label-primary dropdown-toggle me-2 waves-effect waves-light",
+                        text: '<i class="ti ti-file-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span>',
+                        buttons: [
+                            {
+                                extend: "print",
+                                text: '<i class="ti ti-printer me-1" ></i>Print',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                                customize: function (win) {
+                                    //customize print view for dark
+                                    $(win.document.body)
+                                        .css("color", config.colors.headingColor)
+                                        .css(
+                                            "border-color",
+                                            config.colors.borderColor
+                                        )
+                                        .css(
+                                            "background-color",
+                                            config.colors.bodyBg
+                                        );
+                                    $(win.document.body)
+                                        .find("table")
+                                        .addClass("compact")
+                                        .css("color", "inherit")
+                                        .css("border-color", "inherit")
+                                        .css("background-color", "inherit");
+                                },
+                            },
+                            {
+                                extend: "csv",
+                                text: '<i class="ti ti-file-text me-1" ></i>Csv',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                extend: "excel",
+                                text: '<i class="ti ti-file-spreadsheet me-1"></i>Excel',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                extend: "pdf",
+                                text: '<i class="ti ti-file-description me-1"></i>Pdf',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                extend: "copy",
+                                text: '<i class="ti ti-copy me-1" ></i>Copy',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">'+addButton+'</span>',
+                        className:
+                            "create-new btn btn-primary waves-effect waves-light me-2",
+                    },
+                    {
+                        text: '<i class="ti ti-trash me-sm-1"></i> <span class="d-none d-sm-inline-block">Delete</span>',
+                        className:
+                            "btn btn-danger waves-effect waves-light delete-all d-none me-2",
+                    },
+                    {
+                        text: '<i class="ti ti-restore me-sm-1"></i> <span class="d-none d-sm-inline-block">Restore</span>',
+                        className:
+                            "btn btn-success waves-effect waves-light restore-all d-none me-2",
+                    },
+                ],
+
+        })
+        $("div.head-label").html(
+                '<h5 class="card-title mb-0"></h5>'+tableTitle+'</h5>'
+            );
+    })
+</script>
+
+{{-- Multiple select --}}
+<script>
+    $(document).ready(function(){
+    $(document).on('change', '.select-all-items , .select-item', function(){
+        if ($('.select-item:checked').length > 0) {
+            $('.delete-all').removeClass('d-none');
+            $('.restore-all').removeClass('d-none');
+        }else {
+            $('.delete-all').addClass('d-none');
+            $('.restore-all').addClass('d-none');
+        }
+    });
+    });
+</script>
+
+{{-- Multiple delete --}}
+<script>
+    $(document).ready(function(){
+
+        $(document).on('click', '.delete-all', function(e){
+            e.preventDefault();
+
+
+            Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
+                        cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+
+
+                        var ids = [];
+                        $('.select-item').each(function(){
+                            if ($(this).is(':checked')) {
+                                ids.push($(this).val());
+                            }
+                        });
+
+
+                        if (ids.length <= 0) {
+                            toastr.error('Please select atleast one item to delete.');
+                            return;
+                        }
+
+                        var url = "{{ route('user.delete.multiple') }}";
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: ids
+                            },
+                            success: function(response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'deleted!',
+                                    text: 'Your file has been deleted.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success waves-effect waves-light'
+                                    }
+                                });
+
+                                $('#table').DataTable().ajax.reload();
+                                $('.select-all-items').prop('checked', false);
+                                $('.delete-all').addClass('d-none');
+                                $('.restore-all').addClass('d-none');
+                            },
+                            error: function(xhr, error) {
+                                toastr.error(error);
+                            }
+                        });
+                    }
+                });
+        });
+    });
+</script>
+
+{{-- Multiple restore --}}
+<script>
+    $(document).ready(function(){
+
+        $(document).on('click', '.restore-all', function(e){
+            e.preventDefault();
+
+
+            Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, restore it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
+                        cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+
+                        var ids = [];
+                        $('.select-item').each(function(){
+                            if ($(this).is(':checked')) {
+                                ids.push($(this).val());
+                            }
+                        });
+
+
+                        if (ids.length <= 0) {
+                            toastr.error('Please select atleast one item to restore.');
+                            return;
+                        }
+
+                        var url = "{{ route('user.restore.multiple') }}";
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: ids
+                            },
+                            success: function(response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'restoreed!',
+                                    text: 'Your file has been restoreed.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success waves-effect waves-light'
+                                    }
+                                });
+
+                                $('#table').DataTable().ajax.reload();
+                                $('.select-all-items').prop('checked', false);
+                                $('.restore-all').addClass('d-none');
+                                $('.delete-all').addClass('d-none');
+                            },
+                            error: function(xhr, error) {
+                                toastr.error(error);
+                            }
+                        });
+                    }
+                });
+        });
+    });
+</script>
 
 @endsection
 

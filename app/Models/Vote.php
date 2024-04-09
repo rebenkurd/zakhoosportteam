@@ -12,15 +12,10 @@ class Vote extends Model
 
     protected $guarded = [];
 
-    public function user()
+    public function option()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(PollOption::class);
     }
 
-    public function voteable()
-    {
-        return $this->morphTo();
-    }
 
-    
 }

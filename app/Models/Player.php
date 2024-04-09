@@ -12,6 +12,7 @@ class Player extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['full_name','age_parse'];
     public function team()
     {
         return $this->belongsTo(Team::class);

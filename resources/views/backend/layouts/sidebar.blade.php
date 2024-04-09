@@ -25,45 +25,29 @@
       </li>
 
       {{-- User --}}
-      <li class="menu-item {{ in_array(Route::currentRouteName(),['list.user','add.user','recycle.user'])?'active open':'' }}">
+      <li class="menu-item {{ in_array(Route::currentRouteName(),['list.user','add.user','recycle.user','list.role','add.role'])?'active open':'' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-users"></i>
           <div data-i18n="Users">Users</div>
         </a>
         <ul class="menu-sub">
-        {{-- @can('list of users') --}}
             <li class="menu-item {{ Route::currentRouteName()=='list.user' ? 'active':''}}">
               <a href="{{ route('list.user') }}" class="menu-link">
                   <div data-i18n="List of Users">List of Users</div>
               </a>
             </li>
-        {{-- @endcan
-        @can('add new user') --}}
           <li class="menu-item {{ Route::currentRouteName()=='add.user' ? 'active':''}}">
             <a href="{{ route('add.user') }}" class="menu-link">
               <div data-i18n="Add New User">Add New User</div>
             </a>
           </li>
-        {{-- @endcan
 
-        @can('recycle user') --}}
           <li class="menu-item {{ Route::currentRouteName() == 'recycle.user' ? 'active':''}}">
             <a href="{{ route('recycle.user') }}" class="menu-link">
               <div data-i18n="Recycle User">Recycle User</div>
             </a>
           </li>
-        {{-- @endcan
 
-        @can('import users') --}}
-          <li class="menu-item">
-            <a href="app-logistics-dashboard.html" class="menu-link">
-              <div data-i18n="Import Users">Import Users</div>
-            </a>
-          </li>
-        {{-- @endcan --}}
-
-        </ul>
-      </li>
 
       {{-- User Role --}}
       <li class="menu-item {{ in_array(Route::currentRouteName(),['list.role','add.role'])?'active open':'' }}">
@@ -84,6 +68,9 @@
           </li>
         </ul>
       </li>
+        </ul>
+      </li>
+
 
 
       {{-- Sponsor --}}
@@ -198,8 +185,60 @@
 
         </ul>
       </li>
+      {{-- Poll --}}
+      <li class="menu-item {{ in_array(Route::currentRouteName(),['list.poll','add.poll','recycle.poll','list.poll.category','add.poll.category','recycle.poll.category'])?'active open':'' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-chart-bar"></i>
+          <div data-i18n="Poll">Poll</div>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item  {{ Route::currentRouteName() == 'list.poll' ? 'active':''}}">
+              <a href="{{ route('list.poll') }}" class="menu-link">
+                  <div data-i18n="List of Poll">List of Poll</div>
+              </a>
+            </li>
 
+          <li class="menu-item  {{ Route::currentRouteName() == 'add.poll' ? 'active':''}}">
+            <a href="{{ route('add.poll') }}" class="menu-link">
+              <div data-i18n="Add New Poll">Add New Poll</div>
+            </a>
+          </li>
 
+          <li class="menu-item  {{ Route::currentRouteName() == 'recycle.poll' ? 'active':''}}">
+            <a href="{{ route('recycle.poll') }}" class="menu-link">
+              <div data-i18n="Recycle Poll">Recycle Poll</div>
+            </a>
+          </li>
+
+          {{-- Poll Category --}}
+          <li class="menu-item {{ in_array(Route::currentRouteName(),['list.poll.category','add.poll.category','recycle.poll.category'])?'active open':'' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons ti ti-chart-bar"></i>
+              <div data-i18n="Poll Category">Poll Category</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item  {{ Route::currentRouteName() == 'list.poll.category' ? 'active':''}}">
+                  <a href="{{ route('list.poll.category') }}" class="menu-link">
+                      <div data-i18n="List of Poll Category">List of Poll Category</div>
+                  </a>
+                </li>
+
+              <li class="menu-item  {{ Route::currentRouteName() == 'add.poll.category' ? 'active':''}}">
+                <a href="{{ route('add.poll.category') }}" class="menu-link">
+                  <div data-i18n="Add New Poll Category">Add New Poll Category</div>
+                </a>
+              </li>
+
+              <li class="menu-item  {{ Route::currentRouteName() == 'recycle.poll.category' ? 'active':''}}">
+                <a href="{{ route('recycle.poll.category') }}" class="menu-link">
+                  <div data-i18n="Recycle Poll Category">Recycle Poll Category</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </li>
 
       {{-- Team --}}
       <li class="menu-item {{ Route::currentRouteName() == 'detail.team' ? 'active':''}}" >

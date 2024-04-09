@@ -9,16 +9,60 @@ use App\Models\News;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
-
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 class NewsController extends Controller
 {
 
     // Start List of News method
-    public function ListOfNews(){
-        $news = News::all();
-        return view('backend.pages.news.list_of_news',compact('news'));
-    // end List of News method
+    public function ListOfNews( Request $request){
+        if($request->ajax()){
+            $data = News::query();
+            return DataTables::of($data)->addIndexColumn()->
+            addColumn('image',function($row){
+            $image='<div class="d-flex justify-content-start align-items-center user-name">'.
+                '<div class="avatar-wrapper">'.
+                    '<div class="avatar me-3"><img src="'. (!empty($row->image)? asset($row->image) : "https://via.placeholder.com/150x150") .'" alt="Avatar"'.
+                    'class="rounded-circle"></div>'.
+                '</div>'.
+                '<div class="d-flex flex-column"><span'.
+                            'class="fw-medium">'.Str::substr($row->title_en,0,30).'</span></div>'.
+            '</div>';
+            return $image;
+            })->
+            addColumn('action',function($row){
+                $btn ='<button type="button"'.
+                'class="btn text-primary btn-icon rounded-2 dropdown-toggle hide-arrow"'.
+                'data-bs-toggle="dropdown" aria-expanded="false">'.
+                '<i class="ti ti-dots"></i>'.
+            '</button>'.
+            '<ul class="dropdown-menu dropdown-menu-end">'.
+                '<li><a href="'.route("detail.news",$row->id).'"class="dropdown-item"><i class="ti ti-user"></i> Detail</a></li>'.
+                '<li><a href="'.route("edit.news",$row->id).'" class="dropdown-item"><i class="ti ti-edit"></i> Edit</a></li>'.
+                '<li><a href="javascript:void(0);" class="dropdown-item ban-btn" data-id="'.$row->id.'"><i class="ti ti-ban"></i> Ban</a></li>'.
+                '<li><a href="javascript:void(0);" class="dropdown-item delete-btn" data-id="'.$row->id.'"><i class="ti ti-trash"></i> Delete</a></li>'.
+            '</ul>'
+                ;
+
+                return $btn;
+            },)->
+            addColumn('statusBtn',function($row){
+                if($row->status == 'active'){
+                    $statusBtn = '<a href="javascript:void(0);" class="status-toggle" data-id="'.$row->id.'" data-status="inactive"><span class="badge bg-label-success">Active</span></a>';
+                }else{
+                    $statusBtn = '<a href="javascript:void(0);" class="status-toggle" data-id="'.$row->id.'" data-status="active"><span class="badge bg-label-danger">Inactive</span></a>';
+                }
+                return $statusBtn;
+            })->
+            addColumn('creator',function($row){
+                return $row->user->name;
+            })->
+            rawColumns(['image','action','statusBtn','creator'])->
+            make(true);
+        }
+        return view('backend.pages.news.list_of_news');
     }
+    // end List of News method
 
     // Start Add News method
     public function AddNews(){
@@ -148,9 +192,52 @@ class NewsController extends Controller
 
 
     // Start List of Recycle News method
-    public function ListOfRecycleNews(){
-        $news = News::onlyTrashed()->get();
-        return view('backend.pages.news.recycle_news',compact('news'));
+    public function ListOfRecycleNews( Request $request){
+        if($request->ajax()){
+            $data = News::query()->onlyTrashed();
+            return DataTables::of($data)->addIndexColumn()->
+            addColumn('image',function($row){
+            $image='<div class="d-flex justify-content-start align-items-center user-name">'.
+                '<div class="avatar-wrapper">'.
+                    '<div class="avatar me-3"><img src="'. (!empty($row->image)? asset($row->image) : "https://via.placeholder.com/150x150") .'" alt="Avatar"'.
+                    'class="rounded-circle"></div>'.
+                '</div>'.
+                '<div class="d-flex flex-column"><span'.
+                            'class="fw-medium">'.Str::substr($row->title_en,0,30).'</span></div>'.
+            '</div>';
+            return $image;
+            })->
+            addColumn('action',function($row){
+                $btn ='<button type="button"'.
+                'class="btn text-primary btn-icon rounded-2 dropdown-toggle hide-arrow"'.
+                'data-bs-toggle="dropdown" aria-expanded="false">'.
+                '<i class="ti ti-dots"></i>'.
+            '</button>'.
+            '<ul class="dropdown-menu dropdown-menu-end">'.
+                '<li><a href="'.route("detail.news",$row->id).'"class="dropdown-item"><i class="ti ti-user"></i> Detail</a></li>'.
+                '<li><a href="'.route("edit.news",$row->id).'" class="dropdown-item"><i class="ti ti-edit"></i> Edit</a></li>'.
+                '<li><a href="javascript:void(0);" class="dropdown-item ban-btn" data-id="'.$row->id.'"><i class="ti ti-ban"></i> Ban</a></li>'.
+                '<li><a href="javascript:void(0);" class="dropdown-item delete-btn" data-id="'.$row->id.'"><i class="ti ti-trash"></i> Delete</a></li>'.
+            '</ul>'
+                ;
+
+                return $btn;
+            },)->
+            addColumn('statusBtn',function($row){
+                if($row->status == 'active'){
+                    $statusBtn = '<a href="javascript:void(0);" class="status-toggle" data-id="'.$row->id.'" data-status="inactive"><span class="badge bg-label-success">Active</span></a>';
+                }else{
+                    $statusBtn = '<a href="javascript:void(0);" class="status-toggle" data-id="'.$row->id.'" data-status="active"><span class="badge bg-label-danger">Inactive</span></a>';
+                }
+                return $statusBtn;
+            })->
+            addColumn('creator',function($row){
+                return $row->user->name;
+            })->
+            rawColumns(['image','action','statusBtn','creator'])->
+            make(true);
+        }
+        return view('backend.pages.news.recycle_news');
     }
     // end List of Recycle News method
 
@@ -223,6 +310,67 @@ class NewsController extends Controller
     }
     // end News detail method}
 
+
+    // Start Delete Multiple News method
+    public function DeleteMultipleNews(Request $request){
+
+        $ids = $request->ids;
+        $datas = News::whereIn('id',$ids)->withTrashed()->get();
+        foreach($datas as $data){
+            if(file_exists($data->image)){
+                unlink($data->image);
+            }
+            if ($data) {
+                if(file_exists($data->image)){
+                    unlink($data->image);
+                }
+                $data->forceDelete();
+
+                $notify = [
+                    'message' => 'News Deleted Successfully',
+                    'alert-type' => 'success',
+                ];
+            } else {
+                $notify = [
+                    'message' => 'News not found',
+                    'alert-type' => 'error',
+                ];
+            }
+        }
+        return response()->json($notify);
+
+    }
+    // end Delete Multiple News method
+
+    // Start Multiple News Ban method
+    public function BanMultipleNews(Request $request){
+        $ids = $request->ids;
+        $datas = News::whereIn('id',$ids)->withTrashed()->get();
+        foreach($datas as $data){
+            $data->delete();
+        }
+        $notify = [
+            'message' => 'News Baned Successfully',
+            'alert-type' => 'error',
+        ];
+        return response()->json($notify);
+    }
+    // end Multiple News Ban method
+
+    // Start Multiple News Ban method
+    public function RestoreMultipleNews(Request $request){
+        $ids = $request->ids;
+        $datas = News::onlyTrashed()->whereIn('id',$ids)->get();
+        foreach($datas as $data){
+            $data->restore();
+        }
+        $notify = [
+            'message' => 'News Restored Successfully',
+            'alert-type' => 'success',
+        ];
+        return response()->json($notify);
+    }
+    // end Multiple News Ban method
 
 
 

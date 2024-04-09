@@ -17,4 +17,9 @@ class News extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getPostedTimeAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
 }

@@ -95,20 +95,11 @@
     <div class="card">
         <!-- DataTable with Buttons -->
         <div class="card">
-            <div class="card-datatable pt-0">
-                <div class="card-header pb-0 ">
-                    <h4 class="card-title
-                        ">List of News</h4>
-                </div>
-                <a href="{{ route('add.news') }}" class="btn btn-secondary add-new btn-primary waves-effect waves-light m-2"><span><i
-                            class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New
-                            News</span></span></a>
-
-                <table class="table" id="zakho_table">
+            <div class="card-datatable table-responsive pt-0">
+                <table class="datatables-basic table" id="table">
                     <thead>
                         <tr>
-                            <th><input class="form-check-input select-all" type="checkbox" id="selectAll"
-                                    data-value="all"></th>
+                            <th></th>
                             <th>No.</th>
                             <th>title</th>
                             <th>Status</th>
@@ -116,51 +107,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($news as $index => $new)
-                        <tr>
-                            <td><input class="form-check-input" type="checkbox" id="select"></td>
-                            <td>{{ $index+1 }}</td>
-                            <td>
-                                <input type="hidden" value="{{ $new->id }}">
-                                <div class="d-flex justify-content-start align-items-center user-name">
-                                    <div class="avatar-wrapper">
-                                        <div class="avatar me-3"><img src="{{ !empty($new->image)? asset($new->image) : 'https://via.placeholder.com/150x150' }}" alt="Avatar"
-                                                class="rounded-circle"></div>
-                                    </div>
-                                    <div class="d-flex flex-column"><a href="#"
-                                            class="text-body text-truncate"><span
-                                                class="fw-medium" title="{{ $new->title_en }}">{{ Illuminate\Support\Str::substr($new->title_en,0,30) }}...</span></a></div>
-                                </div>
-                            </td>
-                            <td>
-                                @if ($new->status == 'active')
-                                <a href="javascript:void(0);" class="status-toggle" data-id="{{ $new->id }}" data-status="inactive"><span class="badge bg-label-success">Active</span></a>
-                            @else
-                                <a href="javascript:void(0);" class="status-toggle" data-id="{{ $new->id }}" data-status="active"><span class="badge bg-label-danger">Inactive</span></a>
-                            @endif
-                            </td>
-                            <td>
-                                {{ $new->user->name }}
-                            </td>
-                            <td>
-                                <button type="button"
-                                    class="btn text-primary btn-icon rounded-2 dropdown-toggle hide-arrow"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="ti ti-dots"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a href="{{ route('detail.news',$new->id) }}" class="dropdown-item"><i
-                                                class="ti ti-detail"></i> Detail</a></li>
-                                    <li><a href="{{ route('edit.news',$new->id) }}" class="dropdown-item"><i
-                                                class="ti ti-edit"></i> Edit</a></li>
-                                    <li><a href="javascript:void(0);" class="dropdown-item " id="ban-btn" data-id="{{ $new->id }}"><i class="ti ti-ban"></i> Ban</a></li>
-                                    <li><a href="javascript:void(0);" class="dropdown-item " id="delete-btn" data-id="{{ $new->id }}"><i class="ti ti-trash"></i> Delete</a></li>
-                                </ul>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -170,7 +117,7 @@
 
 
 
-{{-- Activate and diactivate news --}}
+{{-- Activate and diactivate--}}
 <script>
     $(document).ready(function(){
 
@@ -225,11 +172,10 @@
 </script>
 
 
-{{-- force delete news --}}
+{{-- force delete --}}
 <script>
     $(document).ready(function(){
-        if($('#delete-btn').length){
-            $(document).on('click', '#delete-btn', function (e) {
+            $(document).on('click', '.delete-btn', function (e) {
                 e.preventDefault();
                 var deleteBtn = $(this);
                 Swal.fire({
@@ -273,15 +219,14 @@
                     }
                 });
             });
-        }
+
     });
 </script>
 
-{{-- ban news --}}
+{{-- ban --}}
 <script>
     $(document).ready(function(){
-        if($('#ban-btn').length){
-            $(document).on('click', '#ban-btn', function (e) {
+            $(document).on('click', '.ban-btn', function (e) {
                 e.preventDefault();
                 var banBtn = $(this);
                 Swal.fire({
@@ -325,7 +270,486 @@
                     }
                 });
             });
+    });
+</script>
+
+{{-- crete new  --}}
+<script>
+    $(document).ready(function(){
+            $(document).on('click', '.create-new', function (e) {
+                e.preventDefault();
+                var url = "{{ route('add.news') }}";
+                $.ajax({
+                    url: url,
+                    type: 'get',
+                    success: function(response) {
+                        window.location.href = url;
+                    },
+                    error: function(xhr, error) {
+                        toastr.error(error);
+                    }
+                });
+            });
+    });
+</script>
+
+{{-- Table Data --}}
+<script>
+    $(function(){
+
+        var addButton = "Add New News";
+        var tableTitle = "List Of News";
+        var columnNumber = [1,2,3,4];
+        var url = "{{ route('list.news') }}";
+        let table =$('#table');
+
+        table.dataTable({
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            ajax:url,
+            columnDefs: [
+                {
+                    // For Checkboxes
+                    targets: 0,
+                    orderable: false,
+                    searchable: false,
+                    responsivePriority: 3,
+                    checkboxes: true,
+                    render: function (id) {
+                        return '<input type="checkbox" value="'+id+'" class="dt-checkboxes form-check-input select-item">';
+                    },
+                    checkboxes: {
+                        selectAllRender:
+                            '<input type="checkbox" class="form-check-input select-all-items">',
+                    },
+                }
+            ],
+            columns: [
+                {
+                    data: 'id',
+                    name: 'id',
+                    orderable: false,
+                    searchable: false,
+                    visible: true
+                },
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false,
+                    width: '3%'
+                },
+                {
+                    data: 'image',
+                    name: 'name'
+                },
+                {
+                    data: 'statusBtn',
+                    name: 'status',
+                    width: '15%'
+
+                },
+                {
+                    data: 'creator',
+                    name: 'creator',
+                    width: '15%'
+
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    width: '15%'
+                },
+
+            ],
+            dom: '<"card-header flex-column flex-md-row"<"head-label fs-3 text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+            buttons: [
+                    {
+                        extend: "collection",
+                        className:
+                            "btn btn-label-primary dropdown-toggle me-2 waves-effect waves-light",
+                        text: '<i class="ti ti-file-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span>',
+                        buttons: [
+                            {
+                                extend: "print",
+                                text: '<i class="ti ti-printer me-1" ></i>Print',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                                customize: function (win) {
+                                    //customize print view for dark
+                                    $(win.document.body)
+                                        .css("color", config.colors.headingColor)
+                                        .css(
+                                            "border-color",
+                                            config.colors.borderColor
+                                        )
+                                        .css(
+                                            "background-color",
+                                            config.colors.bodyBg
+                                        );
+                                    $(win.document.body)
+                                        .find("table")
+                                        .addClass("compact")
+                                        .css("color", "inherit")
+                                        .css("border-color", "inherit")
+                                        .css("background-color", "inherit");
+                                },
+                            },
+                            {
+                                extend: "csv",
+                                text: '<i class="ti ti-file-text me-1" ></i>Csv',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                extend: "excel",
+                                text: '<i class="ti ti-file-spreadsheet me-1"></i>Excel',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                extend: "pdf",
+                                text: '<i class="ti ti-file-description me-1"></i>Pdf',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                extend: "copy",
+                                text: '<i class="ti ti-copy me-1" ></i>Copy',
+                                className: "dropdown-item",
+                                exportOptions: {
+                                    columns: columnNumber,
+                                    // prevent avatar to be display
+                                    format: {
+                                        body: function (inner, coldex, rowdex) {
+                                            if (inner.length <= 0) return inner;
+                                            var el = $.parseHTML(inner);
+                                            var result = "";
+                                            $.each(el, function (index, item) {
+                                                if (
+                                                    item.classList !== undefined &&
+                                                    item.classList.contains(
+                                                        "user-name"
+                                                    )
+                                                ) {
+                                                    result =
+                                                        result +
+                                                        item.lastChild.firstChild
+                                                            .textContent;
+                                                } else if (
+                                                    item.innerText === undefined
+                                                ) {
+                                                    result =
+                                                        result + item.textContent;
+                                                } else
+                                                    result =
+                                                        result + item.innerText;
+                                            });
+                                            return result;
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">'+addButton+'</span>',
+                        className:
+                            "create-new btn btn-primary waves-effect waves-light me-2",
+                    },
+                    {
+                        text: '<i class="ti ti-trash me-sm-1"></i> <span class="d-none d-sm-inline-block">Delete</span>',
+                        className:
+                            "btn btn-danger waves-effect waves-light delete-all d-none me-2",
+                    },
+                    {
+                        text: '<i class="ti ti-ban me-sm-1"></i> <span class="d-none d-sm-inline-block">Ban</span>',
+                        className:
+                            "btn btn-info waves-effect waves-light ban-all d-none me-2",
+                    },
+                ],
+
+        })
+        $("div.head-label").html(
+                '<h5 class="card-title mb-0"></h5>'+tableTitle+'</h5>'
+            );
+    })
+</script>
+
+{{-- Multiple select --}}
+<script>
+    $(document).ready(function(){
+    $(document).on('change', '.select-all-items , .select-item', function(){
+        if ($('.select-item:checked').length > 0) {
+            $('.delete-all').removeClass('d-none');
+            $('.ban-all').removeClass('d-none');
+        }else {
+            $('.delete-all').addClass('d-none');
+            $('.ban-all').addClass('d-none');
         }
+    });
+    });
+</script>
+
+{{-- Multiple delete --}}
+<script>
+    $(document).ready(function(){
+
+        $(document).on('click', '.delete-all', function(e){
+            e.preventDefault();
+
+
+            Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
+                        cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'deleted!',
+                            text: 'Your file has been deleted.',
+                            customClass: {
+                                confirmButton: 'btn btn-success waves-effect waves-light'
+                            }
+                        });
+
+
+                        var ids = [];
+                        $('.select-item').each(function(){
+                            if ($(this).is(':checked')) {
+                                ids.push($(this).val());
+                            }
+                        });
+
+
+                        if (ids.length <= 0) {
+                            toastr.error('Please select atleast one item to delete.');
+                            return;
+                        }
+
+                        var url = "{{ route('news.delete.multiple') }}";
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: ids
+                            },
+                            success: function(response) {
+                                $('#table').DataTable().ajax.reload();
+                                $('.select-all-items').prop('checked', false);
+                                $('.delete-all').addClass('d-none');
+                                $('.restore-all').addClass('d-none');
+                            },
+                            error: function(xhr, error) {
+                                toastr.error(error);
+                            }
+                        });
+                    }
+                });
+        });
+    });
+</script>
+
+{{-- Multiple Ban --}}
+<script>
+    $(document).ready(function(){
+
+        $(document).on('click', '.ban-all', function(e){
+            e.preventDefault();
+
+
+            Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, ban it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
+                        cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'baned!',
+                            text: 'Your file has been baned.',
+                            customClass: {
+                                confirmButton: 'btn btn-success waves-effect waves-light'
+                            }
+                        });
+
+
+                        var ids = [];
+                        $('.select-item').each(function(){
+                            if ($(this).is(':checked')) {
+                                ids.push($(this).val());
+                            }
+                        });
+
+
+                        if (ids.length <= 0) {
+                            toastr.error('Please select atleast one item to ban.');
+                            return;
+                        }
+
+                        var url = "{{ route('news.ban.multiple') }}";
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: ids
+                            },
+                            success: function(response) {
+                                $('#table').DataTable().ajax.reload();
+                                $('.select-all-items').prop('checked', false);
+                                $('.delete-all').addClass('d-none');
+                            },
+                            error: function(xhr, error) {
+                                toastr.error(error);
+                            }
+                        });
+                    }
+                });
+        });
     });
 </script>
 

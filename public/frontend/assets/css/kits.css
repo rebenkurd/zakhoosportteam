@@ -1,0 +1,182 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* ------------------------------------------------------------------------------ */
+  .header-fixture{
+    width: 100%;
+    padding: 0 50px;
+    margin-top: 85px;
+    background: url("../image/kits/HintergrundSpieler.avif");
+  background-size: cover;
+  height: 426px;
+  display: flex;
+  align-items: center;
+  margin-top: 60px;
+  justify-content: space-between;
+  }
+  .header-fixture .left {
+    color:  white;
+  }
+  .header-fixture .left h1{
+    font-family: Noto Sans;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: 0em;
+  text-align: left;
+  }
+  .header-fixture .left p{
+    font-family: Noto Sans;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 52px;
+    letter-spacing: 0em;
+    text-align: left;
+  opacity: .8;  
+  }
+  
+  
+  .header-fixture .right img{
+    width: 218px;
+    height: 218px;
+    
+    border-radius: 199px;
+  }
+  
+  /*----*/
+  .header-month h1{
+    color: #E22028;
+  }
+  .player_Kits{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    }
+  .player_Kits .cardteam{
+    margin: 40px !important;
+    display: flex;
+    flex-direction: column;
+  margin: 10px;
+    position: relative;
+    width: 318px;
+    height: 460px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  }
+  .player_Kits .cardteam img{
+  width: 45%;
+  margin: auto ;
+  height: 85%;
+  }
+  .player_Kits .cardteam h3{
+    background: rgb(15, 111, 170);
+    background: url("../image/kits/HintergrundSpieler.avif");
+  background-size:cover;
+    height: 100%;
+    width: 100%;
+  font-size: 18px;
+  margin: 12px 0;
+  text-align: center;
+  border-bottom-left-radius:20px ;
+  border-bottom-right-radius: 20px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  }
+  .player_Kits .cardteam:nth-child(1){
+  display: flex;
+  }
+  
+  
+  .player_Kits .cardteam .main{
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .player_Kits .cardteam .main::before{
+  content: 'players dress';
+  position: absolute;
+  width: 150%;
+  height: 40px;
+  background: rgb(15, 111, 170);
+  background: url("../image/kits/HintergrundSpieler.avif");
+  background-size:cover;
+  transform: rotate(-45deg) translateY(-20px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.1rem;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  
+  }
+  
+  .player_Kits .cardteam .main::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    background: rgb(15, 111, 170);
+    
+    z-index: -1;
+  box-shadow: 140px -140px #020c35;
+  background: url("../image/kits/HintergrundSpieler.avif");
+  background-size:300%;
+  }
+  
+  
+  
+  
+  
+  @media screen and (max-width:1280px){
+  .all-kits .kits .kit{
+    width: 30%;
+  }
+  }
+  
+  @media screen and (max-width:1280px){
+    .all-kits .kits .kit{
+      width: 45%;
+    }
+    }
+  
+  @media screen and (max-width:550px){
+    .header-fixture{
+      width: 100%;
+      padding: 0 0px;
+  }
+  .header-fixture{
+  flex-direction: column-reverse;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  }
+  .header-fixture .left h1 {
+    font-size: 24px;
+  }
+  .header-fixture .left p {
+    font-size: 16px; 
+    text-align: center;
+  }
+  .all-kits .kits .kit{
+    width: 90%;
+  }
+  }

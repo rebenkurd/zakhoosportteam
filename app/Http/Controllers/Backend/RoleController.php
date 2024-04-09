@@ -5,16 +5,39 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
-
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 class RoleController extends Controller
 {
 
     //Start List of Role Method
-    public function ListOfRoles(){
-        $roles = Role::all();
-        return view('backend.pages.role.list_of_roles',compact('roles'));
+    public function ListOfRoles(Request $request){
+
+        if($request->ajax()){
+            $data = Role::query();
+            return DataTables::of($data)->addIndexColumn()->
+            addColumn('image',function($row){
+                return Str::of($row->name)->apa();
+            })->
+            addColumn('action',function($row){
+                $btn ='<button type="button"'.
+                'class="btn text-primary btn-icon rounded-2 dropdown-toggle hide-arrow"'.
+                'data-bs-toggle="dropdown" aria-expanded="false">'.
+                '<i class="ti ti-dots"></i>'.
+            '</button>'.
+            '<ul class="dropdown-menu dropdown-menu-end">'.
+                '<li><a href="'.route("edit.role",$row->id).'" class="dropdown-item"><i class="ti ti-edit"></i> Edit</a></li>'.
+                '<li><a href="javascript:void(0);" class="dropdown-item delete-btn" data-id="'.$row->id.'"><i class="ti ti-trash"></i> Delete</a></li>'.
+            '</ul>'
+                ;
+
+                return $btn;
+            },)->
+            rawColumns(['image','action'])->
+            make(true);
+        }
+        return view('backend.pages.role.list_of_roles');
     }
     //End List of Role Method
 
@@ -106,4 +129,22 @@ class RoleController extends Controller
     }
     //End Store Permission to Role Method
 
+
+    // Start Delete Multiple User method
+    public function DeleteMultipleRole(Request $request){
+
+        $ids = $request->ids;
+        $datas = Role::whereIn('id',$ids)->get();
+        foreach($datas as $data){
+                $data->delete();
+
+                $notify = [
+                    'message' => 'User Deleted Successfully',
+                    'alert-type' => 'success',
+                ];
+        }
+        return response()->json($notify);
+
+    }
+    // end Delete Multiple User method
 }
