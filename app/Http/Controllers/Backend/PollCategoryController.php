@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\PollCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Str;
@@ -15,7 +16,9 @@ class PollCategoryController extends Controller
         // Start List of PollCategory method
         public function ListOfPollCategory(Request $request){
             if($request->ajax()){
-                $data = PollCategory::query();
+                $data = Cache::rememberForever('poll_categories', function () {
+                    return pollCategory::get();
+                });
                 return DataTables::of($data)->addIndexColumn()->
                 addColumn('image',function($row){
                 $image='<div class="d-flex justify-content-start align-items-center user-name">'.
@@ -183,7 +186,9 @@ class PollCategoryController extends Controller
     // Start List of Recycle PollCategory method
     public function ListOfRecyclePollCategory(Request $request){
         if($request->ajax()){
-            $data = PollCategory::query()->onlyTrashed();
+            $data = Cache::rememberForever('trashed_poll_categories', function () {
+                return pollCategory::onlyTrashed()->get();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.

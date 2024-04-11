@@ -7,6 +7,7 @@ use App\Http\Requests\Backend\ReklamRequest;
 use App\Models\Reklam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Yajra\DataTables\Facades\DataTables;
@@ -18,7 +19,10 @@ class ReklamController extends Controller
     public function ListOfReklams(Request $request){
 
         if($request->ajax()){
-            $data = Reklam::query()->with('user');
+            $data = Cache::rememberForever('reklams', function () {
+                return Reklam::with('user')->get();
+            });
+
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.
@@ -182,7 +186,10 @@ class ReklamController extends Controller
     // Start List of Recycle Reklam method
     public function ListOfRecycleReklam(Request $request){
         if($request->ajax()){
-            $data = Reklam::query()->with('user')->onlyTrashed();
+            $data = Cache::rememberForever('trashed_reklams', function () {
+                return Reklam::with('user')->onlyTrashed()->get();
+            });
+
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.

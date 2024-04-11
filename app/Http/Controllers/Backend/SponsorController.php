@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\SponsorRequest;
 use App\Models\Sponsor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Yajra\DataTables\Facades\DataTables;
@@ -16,7 +17,12 @@ class SponsorController extends Controller
     // Start List of Sponsor method
     public function ListOfSponsors(Request $request){
         if($request->ajax()){
-            $data = Sponsor::query();
+
+            $data = Cache::rememberForever('sponsors', function () {
+                return Sponsor::all();
+            });
+
+
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.
@@ -177,7 +183,9 @@ class SponsorController extends Controller
     // Start List of Recycle Sponsor method
     public function ListOfRecycleSponsor( Request $request){
         if($request->ajax()){
-            $data = Sponsor::query()->onlyTrashed();
+            $data = Cache::rememberForever('trashed_sponsors', function () {
+                return Sponsor::onlyTrashed()->get();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.

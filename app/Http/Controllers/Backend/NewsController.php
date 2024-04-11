@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Backend\NewsRequest;
 use App\Models\News;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Yajra\DataTables\Facades\DataTables;
@@ -17,7 +18,9 @@ class NewsController extends Controller
     // Start List of News method
     public function ListOfNews( Request $request){
         if($request->ajax()){
-            $data = News::query();
+            $data = Cache::rememberForever('news', function () {
+                return News::all();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.
@@ -194,7 +197,9 @@ class NewsController extends Controller
     // Start List of Recycle News method
     public function ListOfRecycleNews( Request $request){
         if($request->ajax()){
-            $data = News::query()->onlyTrashed();
+            $data = Cache::rememberForever('trashed_news', function () {
+                return News::onlyTrashed()->get();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
@@ -15,7 +16,11 @@ class RoleController extends Controller
     public function ListOfRoles(Request $request){
 
         if($request->ajax()){
-            $data = Role::query();
+
+            $data = Cache::rememberForever('roles', function () {
+                return Role::all();
+            });
+
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
                 return Str::of($row->name)->apa();

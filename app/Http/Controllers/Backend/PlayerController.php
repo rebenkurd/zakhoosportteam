@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Player;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Yajra\DataTables\Facades\DataTables;
@@ -14,7 +15,9 @@ class PlayerController extends Controller
     // Start List of Player method
     public function ListOfPlayer(Request $request){
         if($request->ajax()){
-            $data = Player::query();
+            $data = Cache::rememberForever('players', function () {
+                return Player::all();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.
@@ -240,7 +243,9 @@ class PlayerController extends Controller
     // Start List of Recycle Player method
     public function ListOfRecyclePlayer( Request $request){
         if($request->ajax()){
-            $data = Player::query()->onlyTrashed();
+            $data = Cache::rememberForever('trashed_players', function () {
+                return Player::onlyTrashed()->get();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.

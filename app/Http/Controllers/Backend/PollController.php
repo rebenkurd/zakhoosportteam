@@ -9,6 +9,7 @@ use App\Models\Player;
 use App\Models\Poll;
 use App\Models\PollCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 class PollController extends Controller
@@ -18,7 +19,9 @@ class PollController extends Controller
     public function ListOfPoll(Request $request)
     {
         if($request->ajax()){
-            $data = Poll::query()->with('category','user');
+            $data = Cache::rememberForever('polls', function () {
+                return Poll::with('category','user')->get();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             return Str::of($row->category->name)->apa();
@@ -160,7 +163,9 @@ class PollController extends Controller
     // Start List of Recycle Poll method
     public function ListOfRecyclePoll(Request $request){
         if($request->ajax()){
-            $data = Poll::query()->with('category','user')->onlyTrashed();
+            $data = Cache::rememberForever('trashed_polls', function () {
+                return Poll::with('category','user')->onlyTrashed()->get();
+            });
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             return Str::of($row->category->name)->apa();
@@ -256,30 +261,30 @@ class PollController extends Controller
     // End poll Options method
 
 
-        // Start Poll Display method
-        public function PollDisplay($id){
-            $data = Poll::findOrFail($id);
-            if($data->display == 'show'){
-                $data->update([
-                    'display' => 'hide',
-                ]);
-                $notify = [
-                    'message' => 'Poll is Hided Now',
-                    'alert-type' => 'success',
-                ];
-            }else{
-                $data->update([
-                    'display' => 'show',
-                ]);
-                $notify = [
-                    'message' => 'Poll is Showed Now',
-                    'alert-type' => 'success',
-                ];
-            }
-
-            return response()->json(['display'=>$data->display,'notify'=>$notify]);
+    // Start Poll Display method
+    public function PollDisplay($id){
+        $data = Poll::findOrFail($id);
+        if($data->display == 'show'){
+            $data->update([
+                'display' => 'hide',
+            ]);
+            $notify = [
+                'message' => 'Poll is Hided Now',
+                'alert-type' => 'success',
+            ];
+        }else{
+            $data->update([
+                'display' => 'show',
+            ]);
+            $notify = [
+                'message' => 'Poll is Showed Now',
+                'alert-type' => 'success',
+            ];
         }
-        // end Poll Display method
+
+        return response()->json(['display'=>$data->display,'notify'=>$notify]);
+    }
+    // end Poll Display method
 
             // Start Delete Multiple Poll method
     public function DeleteMultiplePoll(Request $request){

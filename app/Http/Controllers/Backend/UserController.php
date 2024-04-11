@@ -7,6 +7,7 @@ use App\Http\Requests\Backend\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -30,7 +31,11 @@ class UserController extends Controller
     public function ListOfUsers(Request $request){
 
         if($request->ajax()){
-            $data = User::query();
+
+            $data = Cache::rememberForever('users', function () {
+                return User::all();
+            });
+
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.
@@ -222,7 +227,10 @@ class UserController extends Controller
     public function ListOfRecycleUser(Request $request){
 
         if($request->ajax()){
-            $data = User::query()->onlyTrashed();
+            $data = Cache::rememberForever('trashed_users', function () {
+                return User::onlyTrashed()->get();
+            });
+
             return DataTables::of($data)->addIndexColumn()->
             addColumn('image',function($row){
             $image='<div class="d-flex justify-content-start align-items-center user-name">'.

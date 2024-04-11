@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
@@ -13,7 +14,9 @@ class TeamController extends Controller
 
     // Start Detail Team method
     public function DetailTeam(){
-        $data = Team::first();
+        $data = Cache::rememberForever('team', function () {
+            return Team::first();
+        });
         return view('backend.pages.team.detail_team',compact('data'));
     }
     // end Detail Team method
